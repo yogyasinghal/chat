@@ -12,7 +12,6 @@ const dbname = 'database';
 
 
 
-
 const path = require('path');
 const http = require('http');
 const express = require('express');
@@ -30,7 +29,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-mongoose.connect('mongodb://localhost:27017/database',function(err){
+mongoose.connect('mongodb://localhost:27017/database',function(err,db){
     if (err){
         console.log(err);
     }
@@ -43,6 +42,8 @@ var ChatSchema = mongoose.Schema({
     username: String,
     msg:String,
     time:String,
+    date:String,
+    // flag:Boolean,
     room:String
     //created : {type : Date,default:Date.now} 
 });
@@ -62,10 +63,8 @@ const botName = "Thanos";
     /////////////////////
     // run wehn a client conects
 io.on('connection',socket =>{
-    
     //let chat = db.collection(chats);
     socket.on('joinRoom',({username,room})=>{
-        // console.log("new web socket connection");
         // catch emit on main.js
         // welcome cuurent user
         const user = userJoin(socket.id,username,room);
@@ -78,7 +77,7 @@ io.on('connection',socket =>{
         // })
         // .catch((err) => console.log(err));
         socket.join(user.room);
-
+        // format message from messages in util
         socket.emit('message',formatMessage(botName,'welcome to chat app'));
     
         // broadcast(to every body) when a user connects
@@ -99,11 +98,12 @@ io.on('connection',socket =>{
     
     // listen for chatmessage 
     socket.on('chatMessage',(msg)=>{
-        console.log("........jj.....");
+        // console.log("........jj.....");
         console.log(msg);
         const user = getCurrentUser(socket.id);
 
         var d = new Date(); // for now
+        console.log("date = " + d);
         var h = d.getHours(); // => 9
         if (h>12){
             var h = h - 12;
@@ -116,19 +116,45 @@ io.on('connection',socket =>{
             var zone = "pm"
         }
         var m = d.getMinutes(); // =>  30
+        if (m<10){
+            var min = "0" + m.toString();
+        }
+        else{
+            var min = m.toString();
+        }
+
+        console.log("m = " + m);
         var hour = h.toString();
-        var min = m.toString();
+        
         console.log(h,m);
         //d.getSeconds();
+
+        var today = new Date();
+        var dd = today.getDate();
+
+        var mm = today.getMonth()+1; 
+        var yyyy = today.getFullYear();
+        if(dd<10) 
+        {
+            dd='0'+dd;
+        } 
+
+        if(mm<10) 
+        {
+            mm='0'+mm;
+        } 
+        today = dd+'-'+mm+'-'+yyyy;
+        console.log(today);
         var newMsg = new Chat({username:user.username, 
-        msg:msg,time:hour + ":" +  min + zone,room:user.room});
-        // console.log(db.collection.find({}));
+                    msg:msg,time:hour + ":" +  min + zone,
+                    date:today,flag:true,room:user.room});
+        console.log("find = " + Chat.collection.find({}));
         console.log(newMsg);
         newMsg.save().then(res=>{
             console.log("saved");
             //if (err) throw err;
             //io.sockets.emit('message',formatMessage(user.username,msg));
-            io.to(user.room).emit('message',formatMessage(user.username,msg));
+            io.to(user.room).emit('message',formatMessage(user.username,msg,today));
         });
         // .catch((err) => console.log(err));
 
@@ -159,7 +185,10 @@ io.on('connection',socket =>{
         //const user = userJoin(socket.id,username,room);
         const user = getCurrentUser(socket.id);
         console.log("user = ",user);
-        socket.broadcast.to(user.room).emit('typing',username); 
+        if (user){
+            socket.broadcast.to(user.room).emit('typing',username);
+        }
+         
     });
     
    

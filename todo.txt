@@ -1,0 +1,12 @@
+add today yesterday like heading at top of each day
+have passed date with msg and create date in db
+// make flag in schema for date to show or not
+
+show sender name as you and some other color 
+we can create two div.inner html in mainjs
+
+option of create room
+
+fix the typing tag
+
+delete chat on click

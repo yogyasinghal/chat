@@ -8,6 +8,7 @@ const userList = document.getElementById('users');
 const msg = document.getElementById('msg');
 /////////////
 const typingid = document.getElementById('typing');
+const date = document.getElementById('date');
 ////////////
 // get username and room from url
 
@@ -19,13 +20,16 @@ console.log(username,room);
 const socket = io();
 
 socket.emit('joinRoom',{username,room});
-
+// socket.emit('joinRoom',"helllo world");
 
 //console.log("msg = " + msg);
 
 // message from servert
 socket.on('message',message=>{
     console.log(message);
+    console.log("msg username" + message.username);
+    console.log("date = " + message.date);
+    // console.log(message.room);
     //const currentTime = message.time;
     // now we put msg in chat instead of console log
     // we can use react js also 
@@ -39,14 +43,17 @@ socket.on('message',message=>{
 });
 
 socket.on('load old msgs',function(docs){
-    console.log("kkkkkkkkkkkkkk");
-    console.log(docs);
+    // console.log("kkkkkkkkkkkkkk");
+    // console.log(docs);
     //console.log(docs[0].msg);
-    console.log("...........................");
+    // console.log("...........................");
     //console.log(docs[0]);
 
     for(var i = 0 ; i<docs.length ; i++)
     {
+        // if (docs[i].flag === true){
+        //     console.log("found trueeee");
+        // }
         if (docs[i].room === room){
             console.log("hello");
             outputOldMessage(docs[i]);
@@ -108,11 +115,26 @@ chatForm.addEventListener('submit',(e)=>{
 function outputMessage(message) {
     const div = document.createElement('div');
     // adding class of message
+    // console.log("username = " + username);
+    // console.log("message.username = " + message.username);
     div.classList.add('message');
-    div.innerHTML = `<p class="meta"> ${message.username} <span>${message.time}</span></p>
-	<p class="text">
-		${message.text}
-	</p>`;
+    var name;
+    if (username==message.username){
+        name = "You";
+        div.innerHTML = `<p class="meta2"> ${name} <span>${message.time}</span></p>
+	    <p class="text2">
+		    ${message.text}
+	    </p>`;
+    }
+    else{
+        name = message.username;
+        div.innerHTML = `<p class="meta"> ${name} <span>${message.time}</span></p>
+	    <p class="text">
+		    ${message.text}
+	    </p>`;
+    }
+    
+    
     document.querySelector('.chat-messages').appendChild(div);
     //div.classList.add('type');
     // cartDiv = "<div id='typing'></div>"; // document.createElement('div');
