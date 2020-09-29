@@ -1,11 +1,10 @@
 // used for converting string to object
 // for name and other strings
 const moment = require('moment');
-function formatMessage(username,text,date) {
+function formatMessage(username,msg) {
     return {
         username,
-        text,
-        date,
+        msg,
         time :moment().format('h:m a')
     }
 }

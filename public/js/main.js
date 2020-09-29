@@ -1,30 +1,39 @@
 // frontend js
-
+// const Chat = require('../server.js');
 // accessing form
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 const msg = document.getElementById('msg');
+const del = document.getElementById('delete');
+const register = document.getElementById('register');
 /////////////
 const typingid = document.getElementById('typing');
 const date = document.getElementById('date');
 ////////////
 // get username and room from url
+// username = 'yogya';
+// roon ='php';
+// register.addEventListener('submit',(e)=>{
+//     e.preventDefault();
+//     const uname = e.target.elements.username.value;
+//     console.log("uname = ",uname);
+// });
 
 const {username,room} = Qs.parse(location.search,{
     ignoreQueryPrefix :true
 });
 console.log(username,room);
+// console.log("temp = ",temp);
 // it is working as we put script src in html file
 const socket = io();
 
 socket.emit('joinRoom',{username,room});
 // socket.emit('joinRoom',"helllo world");
 
-//console.log("msg = " + msg);
 
-// message from servert
+// message from server
 socket.on('message',message=>{
     console.log(message);
     console.log("msg username" + message.username);
@@ -43,11 +52,6 @@ socket.on('message',message=>{
 });
 
 socket.on('load old msgs',function(docs){
-    // console.log("kkkkkkkkkkkkkk");
-    // console.log(docs);
-    //console.log(docs[0].msg);
-    // console.log("...........................");
-    //console.log(docs[0]);
 
     for(var i = 0 ; i<docs.length ; i++)
     {
@@ -111,6 +115,7 @@ chatForm.addEventListener('submit',(e)=>{
 });
 
 
+
 // output msg to dom
 function outputMessage(message) {
     const div = document.createElement('div');
@@ -118,19 +123,33 @@ function outputMessage(message) {
     // console.log("username = " + username);
     // console.log("message.username = " + message.username);
     div.classList.add('message');
+    console.log("flag = ",message.flag);
+    if (message.flag){
+        //show date 
+        console.log("in if");
+        div.innerHTML = "hello";
+	    // `<p class="date">
+		//     ${message.date}
+	    // </p>`;
+        document.querySelector('.chat-messages').appendChild(div);
+    }
+    // else{
+    //     const div = document.createElement('div');
+    //     div.classList.add('message');
+    // }
     var name;
     if (username==message.username){
         name = "You";
         div.innerHTML = `<p class="meta2"> ${name} <span>${message.time}</span></p>
 	    <p class="text2">
-		    ${message.text}
+		    ${message.msg}
 	    </p>`;
     }
     else{
         name = message.username;
         div.innerHTML = `<p class="meta"> ${name} <span>${message.time}</span></p>
 	    <p class="text">
-		    ${message.text}
+		    ${message.msg}
 	    </p>`;
     }
     
@@ -139,7 +158,7 @@ function outputMessage(message) {
     //div.classList.add('type');
     // cartDiv = "<div id='typing'></div>"; // document.createElement('div');
     // div.body.appendChild(cartDiv);
-    typingid.innerHTML = ""
+    typingid.innerHTML = "";
 }
 function outputOldMessage(message) {
     const div = document.createElement('div');

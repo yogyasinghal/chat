@@ -3,7 +3,7 @@
 ////////////////
 //const mongo = require('mongodb').MongoClient;
 const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
+// const assert = require('assert');
 const url = 'mongodb://localhost:27017/';
 // this dboper is written after operation.js file
 const dboper = require('./operations');
@@ -27,9 +27,10 @@ const {
 
 const app = express();
 const server = http.createServer(app);
+app.use(express.urlencoded({extended : false}))
 const io = socketio(server);
 
-mongoose.connect('mongodb://localhost:27017/database',function(err,db){
+mongoose.connect('mongodb://localhost:27017/database',{ useNewUrlParser: true },function(err,db){
     if (err){
         console.log(err);
     }
@@ -43,7 +44,7 @@ var ChatSchema = mongoose.Schema({
     msg:String,
     time:String,
     date:String,
-    // flag:Boolean,
+    flag:Boolean,
     room:String
     //created : {type : Date,default:Date.now} 
 });
@@ -63,7 +64,6 @@ const botName = "Thanos";
     /////////////////////
     // run wehn a client conects
 io.on('connection',socket =>{
-    //let chat = db.collection(chats);
     socket.on('joinRoom',({username,room})=>{
         // catch emit on main.js
         // welcome cuurent user
@@ -147,14 +147,32 @@ io.on('connection',socket =>{
         console.log(today);
         var newMsg = new Chat({username:user.username, 
                     msg:msg,time:hour + ":" +  min + zone,
-                    date:today,flag:true,room:user.room});
+                    date:today,flag:false,room:user.room});
         console.log("find = " + Chat.collection.find({}));
         console.log(newMsg);
+        // Chat.bios.remove({});
         newMsg.save().then(res=>{
             console.log("saved");
             //if (err) throw err;
             //io.sockets.emit('message',formatMessage(user.username,msg));
-            io.to(user.room).emit('message',formatMessage(user.username,msg,today));
+            Chat.find({}).then(res=>{
+            //console.log("res = " + res);
+            // console.log("old msg",res);
+            var prev = res[res.length - 2];
+            var current = res[res.length - 1];
+            console.log("prev,current = ",prev,current);
+            // below cond need to !=
+            if (prev.date!=current.date){
+                current.flag = true;
+            }
+            console.log("cuurent msg = ",current);
+            // console.log("cuurent message = ",current);
+            io.to(user.room).emit('message',current);
+            // socket.emit('load old msgs',res);
+            });
+            // io.to(user.room).emit('message',
+            //     formatMessage(user.username,msg,today));
+            
         });
         // .catch((err) => console.log(err));
 
@@ -170,15 +188,11 @@ io.on('connection',socket =>{
     // });
     Chat.find({}).then(res=>{
         //console.log("res = " + res);
+        console.log("in old msg");
+        // console.log("old msg",res);
         socket.emit('load old msgs',res);
     });
-    // Chat.find({}).toArray((err,docs)=>{
-    //     console.log("found");
-
-    // });
-
-
-    // runs  when client disconnect
+   
 
     socket.on('typing',function(username){
         // console.log(username) ;
