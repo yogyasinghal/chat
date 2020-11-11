@@ -124,20 +124,22 @@ a {
 .chat-messages .message .meta2 span {
 	color: red;
 }
+
+/* ...................................................... */
 .chat-messages .text2 {
-	color: aqua;
-	background-color:yellow;
+	color: green;
+	/* background-color:yellow; */
 	overflow-x:hidden;
 	overflow-y:auto;
 }
 
 #typing {
 	/* margin-left: 250px; */
-	background-color: red;
+	/* background-color: red; */
 	border-radius: 5px;	
 	/* margin-bottom: -900px; */
-	/* display:flex; */
-	position:fixed;
+	display:flex;
+	/* position:fixed; */
 
 }
 

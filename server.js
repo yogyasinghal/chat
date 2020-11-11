@@ -52,7 +52,7 @@ var ChatSchema = mongoose.Schema({
 var Chat = mongoose.model('Message',ChatSchema);
 // set static folder
 app.use(express.static(path.join(__dirname,'public')));
-const botName = "Thanos";
+const botName = "BOT";
 // MongoClient.connect(url).then((client)=>{
     // if (err){
     //     throw err;
