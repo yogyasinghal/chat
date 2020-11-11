@@ -3,8 +3,9 @@
 ////////////////
 //const mongo = require('mongodb').MongoClient;
 const MongoClient = require('mongodb').MongoClient;
-// const assert = require('assert');
+
 const url = 'mongodb://localhost:27017/';
+// const assert = require('assert');
 // this dboper is written after operation.js file
 const dboper = require('./operations');
 const dbname = 'database';
@@ -29,8 +30,16 @@ const app = express();
 const server = http.createServer(app);
 app.use(express.urlencoded({extended : false}))
 const io = socketio(server);
+// mongoose.connect('mongodb://localhost:27017/database',{ useNewUrlParser: true },function(err,db){
+//     if (err){
+//         console.log(err);
+//     }
+//     else{
+//         console.log("connected to db");
+//     }
+// });
 
-mongoose.connect('mongodb://localhost:27017/database',{ useNewUrlParser: true },function(err,db){
+mongoose.connect('mongodb+srv://yogya:yogya1083@cluster0.hkbcf.mongodb.net/Cluster0?retryWrites=true&w=majority',{ useNewUrlParser: true },function(err,db){
     if (err){
         console.log(err);
     }
