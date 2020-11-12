@@ -235,9 +235,9 @@ io.on('connection',socket =>{
 });
 
 //.catch((err) => console.log(err));
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 // app.set("port",PORT);
 // console.log("You are at port 3000"); 
 // app.listen(PORT);
-server.listen(PORT,()=> console.log(`Server Running at ${PORT}`));
+server.listen(port,()=> console.log(`Server Running at ${port}`));
 
